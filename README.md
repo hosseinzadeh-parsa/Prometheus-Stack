@@ -152,7 +152,7 @@ docker compose up -d
 
 ### Step One → Create a Telegram Bot
 
-Use `@botfather` [link](https://core.telegram.org/bots#6-botfather) to create a new bot and obtain its bot token.
+Use [@botfather](https://core.telegram.org/bots#6-botfather) to create a new bot and obtain its **bot token**.
 
 ### Step Two → Create a Telegram Channel
 
