@@ -28,6 +28,8 @@ scrape_configs:
       - action: labeldrop
         regex: 'container_label_.+'
       - action: labeldrop
+        regex: 'container_env_.+'
+      - action: labeldrop
         regex: 'image'
 
   - job_name: 'node-exporter-private'
@@ -50,6 +52,8 @@ scrape_configs:
 #    metric_relabel_configs:
 #      - action: labeldrop
 #        regex: 'container_label_.+'
+#      - action: labeldrop
+#        regex: 'container_env_.+'
 #      - action: labeldrop
 #        regex: 'image'
 
