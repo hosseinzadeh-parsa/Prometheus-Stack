@@ -140,8 +140,8 @@ services:
     image: gcr.io/cadvisor/cadvisor:${CADVISOR_IMAGE_TAG}
     command: --disable_metrics=disk,udp,percpu
     restart: ${RESTART_POLICY}
-    hostname: '${HOSTNAME}'
-    container_name: cadvisor
+    hostname: ${HOSTNAME}
+    container_name: cadvisor-${HOSTNAME}
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
@@ -154,8 +154,8 @@ services:
   blackbox-exporter:
     image: prom/blackbox-exporter:${BLACKBOX_EXPORTER_IMAGE_TAG}
     restart: ${RESTART_POLICY}
-    hostname: '${HOSTNAME}'
-    container_name: blackbox-exporter
+    hostname: ${HOSTNAME}
+    container_name: blackbox-exporter-${HOSTNAME}
     command:
       - '--config.file=/etc/blackboxexporter/blackbox-exporter.yml'
     volumes:
@@ -168,8 +168,8 @@ services:
   node-exporter:
     image: prom/node-exporter:${NODE_EXPORTER_IMAGE_TAG}
     restart: ${RESTART_POLICY}
-    hostname: '${HOSTNAME}'
-    container_name: node-exporter
+    hostname: ${HOSTNAME}
+    container_name: node-exporter-${HOSTNAME}
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
