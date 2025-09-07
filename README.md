@@ -42,7 +42,6 @@ prometheus-stack
 │   └── Prometheus-Architecture.gif
 ├── prometheus
 │   ├── alerts
-│   │   ├── Alertmanager.rules
 │   │   ├── BlackBox.rules
 │   │   ├── Cadvisor.rules
 │   │   ├── Node_Exporter.rules
