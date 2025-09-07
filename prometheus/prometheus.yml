@@ -55,7 +55,7 @@ scrape_configs:
 #      - action: labeldrop
 #        regex: 'container_env_.+'
 #      - action: labeldrop
-#        regex: 'image'  
+#        regex: 'image'
 
 #  - job_name: 'node-exporter-public'
 #    scheme: 'https'
