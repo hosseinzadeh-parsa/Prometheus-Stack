@@ -1,4 +1,4 @@
-version: '3.8'
+name: prometheus-stack
 
 networks:
   app_net:
@@ -39,11 +39,11 @@ services:
       - traefik.enable=true
       - traefik.docker.network=web_net
       - traefik.http.routers.prometheus.entrypoints=http
-      - traefik.http.routers.prometheus.rule=Host(`${PROSUB}.${DOMAIN_ADDRESS}`)
+      - traefik.http.routers.prometheus.rule=Host(`${PROMETHEUS_SUB}.${DOMAIN_ADDRESS}`)
       - traefik.http.routers.prometheus.middlewares=https-redirect
       - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
       - traefik.http.routers.prometheus-secure.entrypoints=https
-      - traefik.http.routers.prometheus-secure.rule=Host(`${PROSUB}.${DOMAIN_ADDRESS}`)
+      - traefik.http.routers.prometheus-secure.rule=Host(`${PROMETHEUS_SUB}.${DOMAIN_ADDRESS}`)
       - traefik.http.routers.prometheus-secure.tls=true
       - traefik.http.routers.prometheus-secure.tls.options=default
       - traefik.http.routers.prometheus-secure.middlewares=web-auth
@@ -64,6 +64,10 @@ services:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
       - GF_PATHS_DATA=/var/lib/grafana
       - GF_METRICS_ENABLED=true
+      - GF_USERS_DEFAULT_THEME=light
+      - GF_LOG_MODE=console
+      - GF_LOG_LEVEL=critical
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
     networks:
       - web_net
       - app_net
@@ -71,11 +75,11 @@ services:
       - traefik.enable=true
       - traefik.docker.network=web_net
       - traefik.http.routers.grafana.entrypoints=http
-      - traefik.http.routers.grafana.rule=Host(`${GRASUB}.${DOMAIN_ADDRESS}`)
+      - traefik.http.routers.grafana.rule=Host(`${GRAFANA_SUB}.${DOMAIN_ADDRESS}`)
       - traefik.http.routers.grafana.middlewares=https-redirect
       - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
       - traefik.http.routers.grafana-secure.entrypoints=https
-      - traefik.http.routers.grafana-secure.rule=Host(`${GRASUB}.${DOMAIN_ADDRESS}`)
+      - traefik.http.routers.grafana-secure.rule=Host(`${GRAFANA_SUB}.${DOMAIN_ADDRESS}`)
       - traefik.http.routers.grafana-secure.tls=true
       - traefik.http.routers.grafana-secure.tls.options=default
       - traefik.http.routers.grafana-secure.tls.certresolver=mycert
@@ -98,11 +102,11 @@ services:
       - traefik.enable=true
       - traefik.docker.network=web_net
       - traefik.http.routers.alert.entrypoints=http
-      - traefik.http.routers.alert.rule=Host(`${ALESUB}.${DOMAIN_ADDRESS}`)
+      - traefik.http.routers.alert.rule=Host(`${ALERTMANAGER_SUB}.${DOMAIN_ADDRESS}`)
       - traefik.http.routers.alert.middlewares=https-redirect
       - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
       - traefik.http.routers.alert-secure.entrypoints=https
-      - traefik.http.routers.alert-secure.rule=Host(`${ALESUB}.${DOMAIN_ADDRESS}`)
+      - traefik.http.routers.alert-secure.rule=Host(`${ALERTMANAGER_SUB}.${DOMAIN_ADDRESS}`)
       - traefik.http.routers.alert-secure.tls=true
       - traefik.http.routers.alert-secure.tls.options=default
       - traefik.http.routers.alert-secure.middlewares=web-auth
@@ -113,11 +117,11 @@ services:
     image: prom/pushgateway:${PUSHGATEWAY_IMAGE_TAG}
     restart: ${RESTART_POLICY}
     container_name: pushgateway
+    volumes:
+      - pushgateway_data:/tmp/
     command:
       - --persistence.file=/tmp/pushgateway.store
       - --persistence.interval=1m
-    volumes:
-      - pushgateway_data:/tmp/
     networks:
       - web_net
       - app_net
@@ -125,11 +129,11 @@ services:
       - traefik.enable=true
       - traefik.docker.network=web_net
       - traefik.http.routers.push.entrypoints=http
-      - traefik.http.routers.push.rule=Host(`${PGWSUB}.${DOMAIN_ADDRESS}`)
+      - traefik.http.routers.push.rule=Host(`${PUSHGATEWAY_SUB}.${DOMAIN_ADDRESS}`)
       - traefik.http.routers.push.middlewares=https-redirect
       - traefik.http.middlewares.https-redirect.redirectscheme.scheme=https
       - traefik.http.routers.push-secure.entrypoints=https
-      - traefik.http.routers.push-secure.rule=Host(`${PGWSUB}.${DOMAIN_ADDRESS}`)
+      - traefik.http.routers.push-secure.rule=Host(`${PUSHGATEWAY_SUB}.${DOMAIN_ADDRESS}`)
       - traefik.http.routers.push-secure.tls=true
       - traefik.http.routers.push-secure.tls.options=default
       - traefik.http.routers.push-secure.middlewares=web-auth
@@ -138,16 +142,18 @@ services:
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:${CADVISOR_IMAGE_TAG}
-    command: --disable_metrics=disk,udp,percpu
     restart: ${RESTART_POLICY}
     hostname: ${HOSTNAME}
     container_name: cadvisor-${HOSTNAME}
     volumes:
       - /:/rootfs:ro
-      - /var/run:/var/run:rw
+      - /var/run:/var/run:ro
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
       - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    command:
+      - --disable_metrics=disk,udp,percpu,process,referenced_memory
+      - --docker_only
     networks:
       - app_net
 
@@ -156,10 +162,10 @@ services:
     restart: ${RESTART_POLICY}
     hostname: ${HOSTNAME}
     container_name: blackbox-exporter-${HOSTNAME}
-    command:
-      - '--config.file=/etc/blackboxexporter/blackbox-exporter.yml'
     volumes:
       - ./blackbox:/etc/blackboxexporter
+    command:
+      - --config.file=/etc/blackboxexporter/blackbox-exporter.yml
     cap_add:
       - NET_RAW
     networks:
@@ -174,11 +180,11 @@ services:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
       - /:/rootfs:ro
+      - /run/udev:/run/udev:ro
     command:
-      - '--path.procfs=/host/proc'
-      - '--path.sysfs=/host/sys'
-      - '--path.rootfs=/rootfs'
-      - '--collector.filesystem.mount-points-exclude'
-      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --path.rootfs=/rootfs
+      - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)    
     networks:
       - app_net

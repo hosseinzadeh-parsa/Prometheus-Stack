@@ -27,10 +27,10 @@ receivers:
         parse_mode: ""
         send_resolved: true
         disable_notifications: false
-        http_config:
-          proxy_url: "<YOUR HTTP PROXY FOR SENT TELEGRAM MESSAGE>"
-          follow_redirects: true
-          enable_http2: true
+#        http_config:
+#          proxy_url: "<YOUR HTTP PROXY FOR SENT TELEGRAM MESSAGE>"
+#          follow_redirects: true
+#          enable_http2: true
     email_configs:
       - to: "<YOUR RECEIVER MAILBOX>"
         send_resolved: true

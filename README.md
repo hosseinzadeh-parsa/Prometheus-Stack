@@ -72,15 +72,15 @@ NODE_EXPORTER_IMAGE_TAG=v1.9.1
 
 # Domain address
 DOMAIN_ADDRESS=observability.byparsa.dev
-PROSUB=metrics
-GRASUB=grafana
-ALESUB=alerts
-PGWSUB=pushgw
+PROMETHEUS_SUB=metrics
+GRAFANA_SUB=grafana
+ALERTMANAGER_SUB=alerts
+PUSHGATEWAY_SUB=pushgw
 
 # Grafana Auth
-GRAFANA_USERNAME=DevOps
+GRAFANA_USERNAME=<GRAFANA_ADMIN_USERNAME>
 GRAFANA_PASSWORD=<GRAFANA_ADMIN_PASSWORD>
-GRAFANA_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource,grafana-piechart-panel
+GRAFANA_INSTALL_PLUGINS=grafana-clock-panel
 
 # Server Name
 HOSTNAME=observability
@@ -91,7 +91,7 @@ RESTART_POLICY=on-failure
 
 ### Setup Grafana:
 
-Open http://<host-ip>:3000 in your browser and log in with the default credentials:
+Open http://localhost:3000 in your browser and log in with the default credentials:
 
 - **Username:** `admin`
 - **Password:** `admin`
@@ -105,10 +105,14 @@ apiVersion: 1
 datasources:
 - name: Prometheus
   type: prometheus
+  uid: prometheus
   access: proxy
   url: http://prometheus:9090
-  editable: true
+  basicAuth: false
   isDefault: true
+  editable: true
+  jsonData:
+    httpMethod: GET
 ```
 
 ```bash
@@ -209,10 +213,10 @@ receivers:
         parse_mode: ""
         send_resolved: true
         disable_notifications: false
-        http_config:
-          proxy_url: "<YOUR HTTP PROXY FOR SENT TELEGRAM MESSAGE>"
-          follow_redirects: true
-          enable_http2: true
+#        http_config:
+#          proxy_url: "<YOUR HTTP PROXY FOR SENT TELEGRAM MESSAGE>"
+#          follow_redirects: true
+#          enable_http2: true
     email_configs:
       - to: "<YOUR RECEIVER MAILBOX>"
         send_resolved: true
