@@ -46,8 +46,8 @@ services:
       - traefik.http.routers.prometheus-secure.rule=Host(`${PROMETHEUS_SUB}.${DOMAIN_ADDRESS}`)
       - traefik.http.routers.prometheus-secure.tls=true
       - traefik.http.routers.prometheus-secure.tls.options=default
-      - traefik.http.routers.prometheus-secure.middlewares=web-auth
       - traefik.http.routers.prometheus-secure.tls.certresolver=mycert
+      - traefik.http.routers.prometheus-secure.middlewares=web-auth
       - traefik.http.services.prometheus.loadbalancer.server.port=9090
 
   grafana:
@@ -109,8 +109,8 @@ services:
       - traefik.http.routers.alert-secure.rule=Host(`${ALERTMANAGER_SUB}.${DOMAIN_ADDRESS}`)
       - traefik.http.routers.alert-secure.tls=true
       - traefik.http.routers.alert-secure.tls.options=default
-      - traefik.http.routers.alert-secure.middlewares=web-auth
       - traefik.http.routers.alert-secure.tls.certresolver=mycert
+      - traefik.http.routers.alert-secure.middlewares=web-auth
       - traefik.http.services.alert.loadbalancer.server.port=9093
 
   pushgateway:
@@ -136,8 +136,8 @@ services:
       - traefik.http.routers.push-secure.rule=Host(`${PUSHGATEWAY_SUB}.${DOMAIN_ADDRESS}`)
       - traefik.http.routers.push-secure.tls=true
       - traefik.http.routers.push-secure.tls.options=default
-      - traefik.http.routers.push-secure.middlewares=web-auth
       - traefik.http.routers.push-secure.tls.certresolver=mycert
+      - traefik.http.routers.push-secure.middlewares=web-auth
       - traefik.http.services.push.loadbalancer.server.port=9091
 
   cadvisor:
