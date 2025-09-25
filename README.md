@@ -82,11 +82,11 @@ GRAFANA_USERNAME=<GRAFANA_ADMIN_USERNAME>
 GRAFANA_PASSWORD=<GRAFANA_ADMIN_PASSWORD>
 GRAFANA_INSTALL_PLUGINS=grafana-clock-panel
 
+# Restart policy
+RESTART_POLICY=on-failure
+
 # Server Name
 HOSTNAME=observability
-
-# set restart policy
-RESTART_POLICY=on-failure
 ```
 
 ### Setup Grafana:
