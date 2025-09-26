@@ -19,7 +19,7 @@ services:
       - "--log.level=ERROR"
       - "--log.filepath=/log-file.log"
       - "--log.format=json"
-      - "--api=true"
+      - "--api.dashboard=true"
       - "--ping=true"
       - "--accesslog=true"
       - "--accesslog.bufferingsize=250"
@@ -42,7 +42,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik-acme:/acme
     networks:
-      - web_net    
+      - web_net
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=web_net"
@@ -57,4 +57,4 @@ services:
       - "traefik.http.routers.traefik-secure.tls.options=default"
       - "traefik.http.routers.traefik-secure.tls.certresolver=mycert"
       - "traefik.http.routers.traefik-secure.middlewares=web-auth"
-      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+      - "traefik.http.routers.traefik-secure.service=api@internal"
